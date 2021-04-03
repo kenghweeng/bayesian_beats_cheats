@@ -1,5 +1,13 @@
 # Bayesian Beats Cheats
 Once you go Bayesian, there is no evasion!
 
-## Commit message guidelines:
-Since we are working on three different approaches, Iterative Classification, Loopy Belief Propagation, and GNNs stuff, we can simply commit our stuff using [IC|LBP|GCN] <commit message here>  to kinda track what's happening.
+## Commit guidelines:
+Organised our project into the 3 method folders:
+-> Iterative Classification [Jihui]
+-> Loopy BP [Zihan]
+-> GNNs [Keng Hwee]
+-> App prototype using NetworkX and streamlit [Ying Ying] 
+* To be confirmed what exactly we want.
+-> Data guys [Jon, Leonard]
+* Decide amongst selves.
+
