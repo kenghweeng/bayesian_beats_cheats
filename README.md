@@ -12,6 +12,5 @@ Organised our project into the 3 method folders, app and data:
 <br>
 -> App prototype using NetworkX and streamlit [Ying Ying] 
 * To be confirmed what exactly we want.
-<br>
 -> Data guys [Jon, Leonard]
 
