@@ -1,0 +1,6 @@
+networkx
+pylint
+pandas
+autopep8
+pyvis
+scikit-learn
