@@ -11,6 +11,10 @@
    export PATH="$HOME/.local/bin:$PATH"
    ```
 
+# Result
+
+![graph](image/graph.png)
+
 # Layout
 
 [https://blog.streamlit.io/introducing-new-layout-options-for-streamlit/](https://blog.streamlit.io/introducing-new-layout-options-for-streamlit/)
