@@ -27,4 +27,5 @@ def plot(input_node_file_path, input_edge_file_path, out_file_path="bbc.html", h
         except AssertionError as err:
             print(err)
             pass
-    net.show(out_file_path)
+    net.write_html(out_file_path)
+    return [net.num_nodes(), net.num_edges()]

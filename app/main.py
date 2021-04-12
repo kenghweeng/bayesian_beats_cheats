@@ -8,7 +8,7 @@ from plot import plot
 
 network_graph_html_path = "bbc.html"
 input_node_file_path = "../data/unified_node_data.csv"
-input_edge_file_path = "../data/max_edge_weights.csv"
+input_edge_file_path = "../data/uniq_lines_edge_weights.csv"
 
 st.set_page_config(page_title="Bayesian Beats Cheats", layout="wide")
 
@@ -28,7 +28,10 @@ if (options == "Network Graph"):
     st.markdown(r'<span class="red-text">Red</span> nodes are the cheaters',
                 unsafe_allow_html=True)
     if (st.sidebar.button("Replot") or not os.path.isfile(network_graph_html_path)):
-        plot(input_node_file_path, input_edge_file_path)
+        [num_nodes, num_edges] = plot(
+            input_node_file_path, input_edge_file_path)
+        st.markdown("Number of nodes: " + str(num_nodes) +
+                    " Number of edges: " + str(num_edges))
     with open(network_graph_html_path, "r") as f:
         html = f.read()
     components.html(html, height=800)

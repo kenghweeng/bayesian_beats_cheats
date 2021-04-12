@@ -11,6 +11,10 @@
    export PATH="$HOME/.local/bin:$PATH"
    ```
 
+# Running streamlit
+
+Run `streamlit run main.py`
+
 # Result
 
 ![graph](image/graph.png)
