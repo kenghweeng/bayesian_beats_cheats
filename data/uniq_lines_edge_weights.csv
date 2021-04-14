@@ -115,8 +115,6 @@ amanda_smith,benjamin_cole,0.3812814177327788
 amanda_spears,barbara_nunez,2.045085484604654
 amanda_spears,jasmine_smith,1.6498336913521656
 amanda_thompson,allen_bailey,0.5872557539294384
-amanda_walker,carl_rollins,0.34290612985191804
-amanda_walker,cynthia_pena,0.3452152533428056
 amanda_white,michael_price,0.26750401836762605
 amanda_white,matthew_barnes,0.39429319356956727
 amanda_white,ruben_mccoy_phd,0.26930538544434246
@@ -497,7 +495,6 @@ chelsey_boyd,jennifer_osborne,1.290990917936148
 chris_martin,jennifer_stephenson,0.21436026440561762
 chris_martin,daisy_mcfarland,0.3333888557771963
 chris_martin,alan_williams,0.42301386707753197
-christine_robertson,michael_johnson,0.49366776822742187
 christine_robertson,troy_hughes,0.26803685827986584
 christine_robertson,mrs._mary_hammond,1.1834174855970623
 christine_robertson,jennifer_lynch,0.25573573756439666
@@ -519,7 +516,6 @@ christopher_anderson,matthew_rojas,0.5419875095110095
 christopher_benjamin,bobby_flores,0.7419492739088173
 christopher_benjamin,melissa_keller,0.30891534930363435
 christopher_benjamin,ross_donovan,0.6569837307264377
-christopher_benjamin,donna_williams,0.7674433461226364
 christopher_benjamin,douglas_luna,0.22992778364552627
 christopher_benjamin,sarah_kennedy,0.3600734015471141
 christopher_benjamin,lindsay_archer,0.3625145678319791
@@ -794,7 +790,6 @@ david_washington,anne_thompson,0.8517581674001802
 david_washington,edward_collier,0.8867571012832188
 david_washington,shannon_ford,0.8808256378456776
 david_washington,debbie_fernandez,0.5002768879713526
-david_washington,william_smith,0.49693056679122904
 david_washington,christopher_gilmore,0.8749338496004296
 dawn_fuller,michael_camacho,0.2473279528428028
 dawn_fuller,nicholas_simpson,1.0582422998975984
@@ -817,7 +812,6 @@ debbie_fernandez,matthew_bell,0.5913678515046521
 debbie_fernandez,kelsey_brewer,0.38315541654008534
 debbie_fernandez,james_long,0.4837676232192059
 debbie_fernandez,leah_brooks,0.4966778375153702
-debbie_fernandez,william_smith,1.1653762846673905
 debbie_fernandez,loretta_townsend,1.0905270095063817
 debbie_fernandez,margaret_santiago,0.827919247191413
 debbie_fernandez,reginald_garrison,0.8501077136265983
@@ -896,7 +890,6 @@ donald_williams,rachel_davis_dvm,0.9129796547593392
 donald_williams,miguel_barrett,0.5191861886948527
 donald_williams,sherry_everett,0.6375577383492268
 donald_williams,kenneth_allen,0.9323155632148699
-donna_williams,bobby_flores,0.8322607071614498
 douglas_luna,jennifer_cox,0.4104947892107277
 dr._michael_garza_jr.,regina_gray,0.35296600801338385
 dr._samuel_sharp_dds,jared_johnson,1.3642083920545796
@@ -1160,7 +1153,6 @@ heidi_mills,carol_bush,0.4498464107530074
 heidi_mills,david_ruiz,0.38036106786094726
 helen_mcdonald,nathaniel_hood,2.0995316865165754
 henry_poole,matthew_bell,0.6721380389351329
-ian_garcia,michael_johnson,1.5589988634841303
 ian_garcia,christine_robertson,0.4870856294850454
 ian_garcia,laura_vasquez,0.37671841384434196
 ivan_kramer,regina_martinez,0.4524575313512314
@@ -1612,7 +1604,6 @@ jose_kennedy,rachel_hinton,0.3843488852888737
 jose_rodriguez,mark_fuller,0.9008067742446354
 joseph_blair,ross_donovan,0.5116594439549227
 joseph_blair,christopher_benjamin,0.6058171295584441
-joseph_blair,donna_williams,0.6140594132011075
 joseph_blair,bobby_flores,0.6099243486563211
 joseph_blair,veronica_gibson,0.45505890155333845
 joseph_freeman,james_cruz,0.37476699021376925
@@ -2153,7 +2144,6 @@ mark_fuller,daniel_graham,0.2330348688910548
 mark_fuller,keith_scott,0.4676677357377736
 mark_fuller,melissa_barnes,2.143208959080218
 mark_fuller,reginald_garrison,1.1890780443328064
-mark_fuller,william_smith,0.8331626116510593
 mark_fuller,amber_hernandez,0.48039261380011294
 mark_fuller,lee_bass,0.27706943551771906
 mark_fuller,debbie_fernandez,0.8387731131580561
@@ -2192,7 +2182,6 @@ martha_ramirez,patricia_brown,0.9633385152447446
 martha_ramirez,jennifer_simmons,0.5593529730672191
 martha_ramirez,meagan_boyle,0.3388756861067627
 martha_ramirez,michael_rojas,0.8594656954750666
-martha_ramirez,william_smith,0.33448800251908534
 martha_ramirez,mary_clark_dds,0.2281899252102373
 martha_ramirez,deanna_perry,0.3148821139819499
 martha_ramirez,lori_bennett,0.9568948034629265
@@ -2899,7 +2888,6 @@ ronald_ward,nicole_stewart,0.5549291241746139
 ronald_ward,jennifer_cox,0.819014793333427
 ronald_ward,derek_fox,0.32349109163005385
 ross_donovan,bobby_flores,0.6614378407114108
-ross_donovan,donna_williams,0.66592214793694
 roy_morgan,james_romero,0.2944426459387941
 ruben_mccoy_phd,tim_hoffman,0.7818465839280285
 ruben_mccoy_phd,kevin_kelly,0.25522735148333714
@@ -3383,12 +3371,6 @@ william_moreno,leslie_moreno,0.7389984692770015
 william_moreno,michael_romero,0.5951209772180538
 william_moreno,ashley_rogers,0.8508496571928946
 william_phillips,victoria_hubbard,0.39324893329946725
-william_smith,jennifer_miller,1.0258558578710424
-william_smith,richard_gonzalez,0.4230542159279127
-william_smith,david_harris,0.4121729484209779
-william_smith,reginald_garrison,0.8444213956776908
-william_smith,karen_mcdaniel,0.4805317314905256
-william_smith,james_long,0.4773174844415987
 willie_marshall,james_smith,0.5163682862085789
 yvonne_friedman,martin_king,0.7479510800361217
 zachary_austin,brian_elliott,0.47237188905651034
