@@ -46,8 +46,11 @@ Use trained feature_vector classifier to bootstrap on test set.
 Predicted results are in [result.csv](https://github.com/kenghweeng/bayesian_beats_cheats/blob/main/Iterative_Class/result.csv).
 
 The Classification Report is as follows:
+
 K = 9
+
 Ratio of training/test set: 8:2
+
 |              | precision | recall| f1-score | support |
 |:------------:|:---------:|:-----:|:--------:|:-------:|
 | 0            | 0.89      | 0.99  |  0.94    | 212     |
