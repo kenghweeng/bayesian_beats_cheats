@@ -49,7 +49,7 @@ class IterativeClassifier():
         # Iterate until convergence:
         # 1. Update neighborhood vector for all nodes
         # 2. Reclassify all nodes 
-        X_feature_link = self.generate_feature_link_vector(fetures, edge_weights, y)
+        X_feature_link = self.generate_feature_link_vector(fetures, edge_weights, y)    
         while True:
             y_new = self.clf_feature_link.predict_proba(X_feature_link)
             comparison = np.array(y) == np.array(y_new)
@@ -68,11 +68,11 @@ class IterativeClassifier():
 
     def generate_feature_link_vector(self, features, edge_weights, y):
         X = []
-        
+
         name_index_dict = {}
         for i in range(len(features)):
             name_index_dict[features[i][0]] = i
-            
+
         for i in range(len(features)):
             L1_max = sys.float_info.min
             L0_max = sys.float_info.min
@@ -80,9 +80,10 @@ class IterativeClassifier():
             L0_avg = 0
             count1 = 0
             count0 = 0
-            
+
             x = features[i][1:]
             source = features[i][0]
+            weights = []
             try:
                 weights = edge_weights[source]
             except:
@@ -104,21 +105,20 @@ class IterativeClassifier():
                         count0 += 1
                 except:
                     print('no neighbor {}'.format(neighbor))
-                
+
             try:
                 L1_avg /= count1
             except:
                 print(count1, features[i][0])
-                
+
             try:
                 L0_avg /= count0
             except:
                 print(count0, features[i][0])
-            
+
             x.append(L1_max)
             x.append(L0_max)
             x.append(L1_avg)
             x.append(L0_avg)
             X.append(x)
-            
         return X
