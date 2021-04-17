@@ -66,7 +66,7 @@ DEBUG_DEFAULT = True
 
 # This is the maximum number of iterations that we let loopy belief propagation
 # run before cutting it off.
-LBP_MAX_ITERS = 50
+LBP_MAX_ITERS = 100
 
 # Otherwise we'd just make some kinda class to do this anyway.
 E_STOP = False
