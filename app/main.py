@@ -7,7 +7,7 @@ from pyvis.network import Network
 from plot import plot
 
 network_graph_html_path = "bbc.html"
-input_node_file_path = "../data/unified_node_data.csv"
+input_node_file_path = "../data/imputed_unified_node_data.csv"
 input_edge_file_path = "../data/uniq_lines_edge_weights.csv"
 
 st.set_page_config(page_title="Bayesian Beats Cheats", layout="wide")
