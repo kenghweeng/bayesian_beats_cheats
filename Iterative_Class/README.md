@@ -2,29 +2,9 @@
 ## Algorithm
 The dataset is converted into 2 vectors for each node.
 ``` 
-1. feature_vector: 
-   [name, admit_year, participation, pe, finals, total, percentile, 
-   afast, pe_percent, finals_percent, midterms, midterms_percent, level,
-   level_min_max, exp, exp_min_max, num_videos, avg_videos_completion,
-   t01_exp, t02_exp, t03_exp, t04_exp, t05_exp, t06_exp, t07_exp,
-   t08_exp, t09_exp, t10_exp, num_confessed_assignments]
+1. feature_vector: numerical features of the student
    
-2. feature_link_vector: 
-   [name, admit_year, participation, pe, finals, total, percentile, 
-   afast, pe_percent, finals_percent, midterms, midterms_percent, level,
-   level_min_max, exp, exp_min_max, num_videos, avg_videos_completion,
-   t01_exp, t02_exp, t03_exp, t04_exp, t05_exp, t06_exp, t07_exp,
-   t08_exp, t09_exp, t10_exp, num_confessed_assignments,
-   input_1_avg_edge_weights, input_0_avg_edge_weights,
-   input_1_max_edge_weights, input_0_max_edge_weights]
-   
- [name, admit_year, participation, pe, finals, total, percentile, 
- afast, pe_percent, finals_percent, midterms, midterms_percent, level,
- level_min_max, exp, exp_min_max, num_videos, avg_videos_completion,
- t01_exp, t02_exp, t03_exp, t04_exp, t05_exp, t06_exp, t07_exp,
- t08_exp, t09_exp, t10_exp, num_confessed_assignments] are the numerical features of the student
- 
- [l1_avg_edge_weights, l0_avg_edge_weights, l1_max_edge_weights, l0_max_edge_weights] are relational features which are the data from neighbors
+2. feature_link_vector: numerical features and relational features which are the data from neighbors
 ```
 ### Step 1: Training
 ```
@@ -42,20 +22,19 @@ Use trained feature_vector classifier to bootstrap on test set.
     Reclassify all nodes
 ```
 
-## Results
+## Results (K = 9)
 Predicted results are in [result.csv](https://github.com/kenghweeng/bayesian_beats_cheats/blob/main/Iterative_Class/result.csv).
 
-The Classification Report is as follows:
-
-K = 9
-
-Ratio of training/test set: 8:2
+Classification Report
 
 |              | precision | recall| f1-score | support |
 |:------------:|:---------:|:-----:|:--------:|:-------:|
-| 0            | 0.86      | 1.00  |  0.92    | 264     |
-| 1            | 0.00      | 0.00  |  0.00    | 44      |
+| 0            | 0.86      | 0.19  |  0.31    | 264     |
+| 1            | 0.14      | 0.82  |  0.59    | 44      |
 |              |           |       |          |         |
 | accuracy     |           |       | 0.85     | 308     | 
-| macro avg    | 0.43      | 0.50  | 0.46     | 308     |
-| weighted avg | 0.73      | 0.85  | 0.79     | 308     |
+| macro avg    | 0.50      | 0.50  | 0.27     | 308     |
+| weighted avg | 0.76      | 0.28  | 0.30     | 308     |
+
+
+
