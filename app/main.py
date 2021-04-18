@@ -41,9 +41,9 @@ if (options == "Network Graph"):
             input_edge_path = input_edge_file_path
         else:
             input_edge_path = os.path.join("uploads", "edge", chosen_edge_file)
-        [num_nodes, num_edges] = plot(input_node_path, input_edge_path)
+        [num_nodes, num_edges, num_cheaters] = plot(input_node_path, input_edge_path)
         st.markdown("Number of nodes: " + str(num_nodes) +
-                    " Number of edges: " + str(num_edges))
+                    " Number of edges: " + str(num_edges) + " Number of cheaters: " + str(num_cheaters))
 
     with open(network_graph_html_path, "r") as f:
         html = f.read()

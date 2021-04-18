@@ -26,11 +26,10 @@ def get_color(df):
 
 
 def plot(input_node_file_path, input_edge_file_path, out_file_path="bbc.html", height="700px", width="100%"):
-    df_node = pd.read_csv(input_node_file_path)
-    df_edge = pd.read_csv(input_edge_file_path)
+    df_node = pd.read_csv(input_node_file_path, keep_default_na=False)
+    df_edge = pd.read_csv(input_edge_file_path, keep_default_na=False)
 
-    df_node['label'] = df_node.apply(lambda row: 0 if pd.isna(
-        row["confessed_assignments"]) else 1, axis=1)
+    df_node['label'] = df_node['num_confessed_assignments'] > 0
 
     net = Network(height="700px", width="100%")
     net.add_nodes(df_node['name'], label=df_node['name'],
@@ -43,4 +42,4 @@ def plot(input_node_file_path, input_edge_file_path, out_file_path="bbc.html", h
             print(err)
             pass
     net.write_html(out_file_path)
-    return [net.num_nodes(), net.num_edges()]
+    return [net.num_nodes(), net.num_edges(), df_node['label'].sum()]
