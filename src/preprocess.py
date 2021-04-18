@@ -111,41 +111,42 @@ def impute_stats(node_df):
     n_samples, n_features = X_scaled.shape
 
     rng = np.random.RandomState(seed)
-    missing_samples = np.arange(n_samples)
-    missing_features = rng.choice(n_features, n_samples, replace=True)
-    X_missing = X_scaled.copy()
-    X_missing[missing_samples, missing_features] = np.nan
 
-    X_to_check = ~np.isnan(X_scaled) & np.isnan(X_missing)
-
-    estimators = [
-        LinearRegression(),
-        BayesianRidge(),
-        KNeighborsRegressor(),
-    ]
     data = []
-    for i in range(10):
+    for i in range(5):
         iter_seed = rng.randint(0, 10**6)
-        random_estimators = [
-            DecisionTreeRegressor(max_depth=5, min_samples_leaf=5, random_state=iter_seed),
-            ExtraTreesRegressor(n_estimators=20, max_depth=5, random_state=seed), # takes ~1min to run at 100 trees
-            RandomForestRegressor(n_estimators=20, max_depth=5, random_state=seed), # takes ~1min to run at 100 trees
+
+        missing_samples = np.arange(n_samples)
+        missing_features = rng.choice(n_features, n_samples, replace=True)
+        X_missing = X_scaled.copy()
+        X_missing[missing_samples, missing_features] = np.nan
+
+        X_to_check = ~np.isnan(X_scaled) & np.isnan(X_missing)
+
+        estimators = [
+            KNeighborsRegressor(n_neighbors=3, weights='distance', n_jobs=-1),  # 0
+            KNeighborsRegressor(n_neighbors=5, weights='distance', n_jobs=-1),  # 1
+            KNeighborsRegressor(n_neighbors=10, weights='distance', n_jobs=-1), # 2
+            KNeighborsRegressor(n_neighbors=20, weights='distance', n_jobs=-1), # 3
+            KNeighborsRegressor(n_neighbors=3, weights='uniform', n_jobs=-1),   # 4
+            KNeighborsRegressor(n_neighbors=5, weights='uniform', n_jobs=-1),   # 5
+            KNeighborsRegressor(n_neighbors=10, weights='uniform', n_jobs=-1),  # 6
+            KNeighborsRegressor(n_neighbors=20, weights='uniform', n_jobs=-1),  # 7
+            # LinearRegression(),
+            # BayesianRidge(),
+            # DecisionTreeRegressor(max_depth=5, min_samples_leaf=5, random_state=iter_seed),
+            # ExtraTreesRegressor(n_estimators=20, max_depth=5, random_state=seed), # takes ~1min to run at 100 trees
+            # RandomForestRegressor(n_estimators=20, max_depth=5, random_state=seed), # takes ~1min to run at 100 trees
         ]
 
         row = []
-        for est in estimators: # these are deterministic, no need to recompute
-            if i == 0:
-                imp_mean = IterativeImputer(estimator=est, max_iter=100, random_state=iter_seed)
-                X_pred = np.clip(imp_mean.fit_transform(X_missing), 0, 1)
-                est.error_value = mean_squared_error(X[X_to_check], scaler.inverse_transform(X_pred)[X_to_check], squared=False)
-            row.append(est.error_value)
-            print(est.__class__.__name__)
-        for est in random_estimators:
+        for est in estimators:
             imp_mean = IterativeImputer(estimator=est, max_iter=100, random_state=iter_seed)
             X_pred = np.clip(imp_mean.fit_transform(X_missing), 0, 1)
-            row.append(mean_squared_error(X_scaled[X_to_check], scaler.inverse_transform(X_pred)[X_to_check], squared=False))
+            rmse_err = mean_squared_error(X_scaled[X_to_check], scaler.inverse_transform(X_pred)[X_to_check], squared=False)
+            row.append(rmse_err)
         data.append(row)
-    df_stats = pd.DataFrame(data, columns=[est.__class__.__name__ for est in estimators+random_estimators]).T
+    df_stats = pd.DataFrame(data, columns=[f'{est.__class__.__name__}{i:02}' for i, est in enumerate(estimators)]).T
     df_stats['avg_rmse'] = df_stats.mean(axis='columns')
     return df_stats.sort_values('avg_rmse')
 
@@ -194,12 +195,7 @@ def stratified_train_val_test_split(node_df, val_size=0.2, test_size=0.1):
     import pandas as pd
     from src import preprocess
 
-    df_node = pd.read_csv('data/unified_node_data.csv', keep_default_na=False)
-    df_edge = pd.read_csv('data/max_edge_weights.csv')
-    df_formatted = preprocess.nodes1(df_node)
-    df_clean = preprocess.nodes_filter(df_formatted, df_edge)
-    df_impute = preprocess.impute(df_clean)
-
+    df_node = pd.read_csv('data/imputed_unified_node_data.csv', keep_default_na=False)
     X_train, X_val, X_test, y_train, y_val, y_test = preprocess.stratified_train_val_test_split(df_impute)
     '''
     from sklearn.model_selection import train_test_split
@@ -215,3 +211,8 @@ def stratified_train_val_test_split(node_df, val_size=0.2, test_size=0.1):
     stratify_on = y_valtest > 0
     X_val,   X_test,    y_val,   y_test    = train_test_split(X_valtest, y_valtest, test_size=test_size/(val_size + test_size), random_state=seed, stratify=stratify_on)
     return X_train, X_val, X_test, y_train, y_val, y_test
+
+def downsample(df, tgt, random_state=0):
+    groups = df.groupby(tgt)
+    min_size = groups.size().min()
+    return groups.sample(n=min_size, random_state=random_state)
