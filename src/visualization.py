@@ -9,14 +9,28 @@ def get_prec_at_k(k, df):
     return df.head(k).true_labels.sum() / k
 
 
-def parse_results(df_combine):
+def parse_results(df_combine=None, proba=None, true_labels=None):
     '''
     This function will print out all the results for the project
     Arguments
     ---------
     df_combine:     results matrix. Has three headers: name, proba and true_labels. 
-                    proba is the probability that the model predicted 1 { e.g. model..predict_proba(df_test)[:, 1] }
+                    proba is the probability that the model predicted 1 { e.g. model.predict_proba(df_test)[:, 1] }
+    proba:          probability array as per model.predict_proba(df_test)[:, 1]
+    true_labels:    true labels
     '''
+    if (not ((df_combine is None) or (proba is None and true_labels is None))):
+        print("either df_combine, or (proba and true_labels) are required")
+        return
+    elif (df_combine is None and proba.shape[0] != true_labels.shape[0]):
+        print(
+            f"shape of proba and true_labels arrays are wrong: proba={proba.shape[0]}, true_labels={true_labels.shape[0]}")
+        return
+
+    if (df_combine is None):
+        temp = pd.DataFrame(true_labels).reset_index(drop=True)
+        temp.rename(columns={temp.columns[0]: "true_labels"}, inplace=True)
+        df_combine = pd.concat([pd.DataFrame(proba, columns=['proba']), temp], axis=1)
     df_combine.sort_values('proba', ascending=False, inplace=True)
     y_pred = (df_combine.proba > 0.5).astype(int)
 
