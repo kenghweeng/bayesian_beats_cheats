@@ -9,16 +9,14 @@ def get_prec_at_k(k, df):
     return df.head(k).true_labels.sum() / k
 
 
-def parse_results(df_probability, df_true_labels):
+def parse_results(df_combine):
     '''
     This function will print out all the results for the project
     Arguments
     ---------
-    df_probability: probability matrix. Has two headers: proba. proba is the probability that the model predicted 1 
-                    { e.g. model.predict_proba(df_test, axis=1))[:, 1] }
-    df_true_labels: true label matrix. Has two headers: name and true_labels.
+    df_combine:     results matrix. Has three headers: name, proba and true_labels. 
+                    proba is the probability that the model predicted 1 { e.g. model.predict_proba(df_test, axis=1))[:, 1] }
     '''
-    df_combine = df_probability.merge(df_true_labels, on="name")
     df_combine.sort_values('proba', ascending=False, inplace=True)
     y_pred = (df_combine.proba > 0.5).astype(int)
 
