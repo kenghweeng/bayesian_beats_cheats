@@ -15,7 +15,7 @@ def parse_results(df_combine):
     Arguments
     ---------
     df_combine:     results matrix. Has three headers: name, proba and true_labels. 
-                    proba is the probability that the model predicted 1 { e.g. model.predict_proba(df_test, axis=1))[:, 1] }
+                    proba is the probability that the model predicted 1 { e.g. model..predict_proba(df_test)[:, 1] }
     '''
     df_combine.sort_values('proba', ascending=False, inplace=True)
     y_pred = (df_combine.proba > 0.5).astype(int)
