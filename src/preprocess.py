@@ -206,8 +206,7 @@ def stratified_train_val_test_split(node_df, val_size=0.2, test_size=0.1):
     seed = 0
     target_col = 'num_confessed_assignments'
 
-    # X           = node_df.drop(target_col, axis='columns')
-    X = node_df
+    X           = node_df.drop(target_col, axis='columns')
     y           = node_df[target_col]
     stratify_on = node_df[target_col] > 0
 
