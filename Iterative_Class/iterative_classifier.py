@@ -21,7 +21,7 @@ class IterativeClassifier():
         self.clf_feature.fit(X_feature, y)
         self.clf_feature_link.fit(X_feature_link, y)
 
-    def predict(self, fetures, edge_weights):
+    def predict(self, fetures, edge_weights, max_iter=10000):
 
         # Bootstrap: use trained word-vector classifier to bootstrap on test set
         X_feature = self.generate_feature_vector(fetures)
@@ -30,8 +30,10 @@ class IterativeClassifier():
         # Iterate until convergence:
         # 1. Update neighborhood vector for all nodes
         # 2. Reclassify all nodes 
+        iteration = 0
         X_feature_link = self.generate_feature_link_vector(fetures, edge_weights, y)
-        while True:
+        while iteration<max_iter:
+            iteration += 1
             y_new = self.clf_feature_link.predict(X_feature_link)
             comparison = np.array(y) == np.array(y_new)
             y = y_new
@@ -41,7 +43,7 @@ class IterativeClassifier():
 
         return y
 
-    def predict_proba(self, fetures, edge_weights):
+    def predict_proba(self, fetures, edge_weights, max_iter=10000):
 
         # Bootstrap: use trained word-vector classifier to bootstrap on test set
         X_feature = self.generate_feature_vector(fetures)
@@ -49,8 +51,10 @@ class IterativeClassifier():
         # Iterate until convergence:
         # 1. Update neighborhood vector for all nodes
         # 2. Reclassify all nodes 
+        iteration = 0
         X_feature_link = self.generate_feature_link_vector(fetures, edge_weights, y)    
-        while True:
+        while iteration<max_iter:
+            iteration += 1
             y_new = self.clf_feature_link.predict_proba(X_feature_link)
             comparison = np.array(y) == np.array(y_new)
             y = y_new
@@ -78,6 +82,8 @@ class IterativeClassifier():
             L0_max = sys.float_info.min
             L1_avg = 0
             L0_avg = 0
+            L1_min = sys.float_info.max
+            L0_min = sys.float_info.max
             count1 = 0
             count0 = 0
 
@@ -96,11 +102,15 @@ class IterativeClassifier():
                     if label == 1:
                         if weights[j][2] > L1_max:
                             L1_max = weights[j][2]
+                        if weights[j][3] < L1_min:
+                            L1_min = weights[j][3]
                         L1_avg += weights[j][1]
                         count1 += 1
                     else:
                         if weights[j][2] > L0_max:
                             L0_max = weights[j][2]
+                        if weights[j][3] < L0_min:
+                            L0_min = weights[j][3]
                         L0_avg += weights[j][1]
                         count0 += 1
                 except:
@@ -120,5 +130,7 @@ class IterativeClassifier():
             x.append(L0_max)
             x.append(L1_avg)
             x.append(L0_avg)
+            x.append(L1_min)
+            x.append(L0_min)
             X.append(x)
         return X
