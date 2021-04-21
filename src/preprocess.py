@@ -111,41 +111,42 @@ def impute_stats(node_df):
     n_samples, n_features = X_scaled.shape
 
     rng = np.random.RandomState(seed)
-    missing_samples = np.arange(n_samples)
-    missing_features = rng.choice(n_features, n_samples, replace=True)
-    X_missing = X_scaled.copy()
-    X_missing[missing_samples, missing_features] = np.nan
 
-    X_to_check = ~np.isnan(X_scaled) & np.isnan(X_missing)
-
-    estimators = [
-        LinearRegression(),
-        BayesianRidge(),
-        KNeighborsRegressor(),
-    ]
     data = []
-    for i in range(10):
+    for i in range(5):
         iter_seed = rng.randint(0, 10**6)
-        random_estimators = [
-            DecisionTreeRegressor(max_depth=5, min_samples_leaf=5, random_state=iter_seed),
-            ExtraTreesRegressor(n_estimators=20, max_depth=5, random_state=seed), # takes ~1min to run at 100 trees
-            RandomForestRegressor(n_estimators=20, max_depth=5, random_state=seed), # takes ~1min to run at 100 trees
+
+        missing_samples = np.arange(n_samples)
+        missing_features = rng.choice(n_features, n_samples, replace=True)
+        X_missing = X_scaled.copy()
+        X_missing[missing_samples, missing_features] = np.nan
+
+        X_to_check = ~np.isnan(X_scaled) & np.isnan(X_missing)
+
+        estimators = [
+            KNeighborsRegressor(n_neighbors=3, weights='distance', n_jobs=-1),  # 0
+            KNeighborsRegressor(n_neighbors=5, weights='distance', n_jobs=-1),  # 1
+            KNeighborsRegressor(n_neighbors=10, weights='distance', n_jobs=-1), # 2
+            KNeighborsRegressor(n_neighbors=20, weights='distance', n_jobs=-1), # 3
+            KNeighborsRegressor(n_neighbors=3, weights='uniform', n_jobs=-1),   # 4
+            KNeighborsRegressor(n_neighbors=5, weights='uniform', n_jobs=-1),   # 5
+            KNeighborsRegressor(n_neighbors=10, weights='uniform', n_jobs=-1),  # 6
+            KNeighborsRegressor(n_neighbors=20, weights='uniform', n_jobs=-1),  # 7
+            # LinearRegression(),
+            # BayesianRidge(),
+            # DecisionTreeRegressor(max_depth=5, min_samples_leaf=5, random_state=iter_seed),
+            # ExtraTreesRegressor(n_estimators=20, max_depth=5, random_state=seed), # takes ~1min to run at 100 trees
+            # RandomForestRegressor(n_estimators=20, max_depth=5, random_state=seed), # takes ~1min to run at 100 trees
         ]
 
         row = []
-        for est in estimators: # these are deterministic, no need to recompute
-            if i == 0:
-                imp_mean = IterativeImputer(estimator=est, max_iter=100, random_state=iter_seed)
-                X_pred = np.clip(imp_mean.fit_transform(X_missing), 0, 1)
-                est.error_value = mean_squared_error(X[X_to_check], scaler.inverse_transform(X_pred)[X_to_check], squared=False)
-            row.append(est.error_value)
-            print(est.__class__.__name__)
-        for est in random_estimators:
+        for est in estimators:
             imp_mean = IterativeImputer(estimator=est, max_iter=100, random_state=iter_seed)
             X_pred = np.clip(imp_mean.fit_transform(X_missing), 0, 1)
-            row.append(mean_squared_error(X_scaled[X_to_check], scaler.inverse_transform(X_pred)[X_to_check], squared=False))
+            rmse_err = mean_squared_error(X_scaled[X_to_check], scaler.inverse_transform(X_pred)[X_to_check], squared=False)
+            row.append(rmse_err)
         data.append(row)
-    df_stats = pd.DataFrame(data, columns=[est.__class__.__name__ for est in estimators+random_estimators]).T
+    df_stats = pd.DataFrame(data, columns=[f'{est.__class__.__name__}{i:02}' for i, est in enumerate(estimators)]).T
     df_stats['avg_rmse'] = df_stats.mean(axis='columns')
     return df_stats.sort_values('avg_rmse')
 
@@ -194,12 +195,7 @@ def stratified_train_val_test_split(node_df, val_size=0.2, test_size=0.1):
     import pandas as pd
     from src import preprocess
 
-    df_node = pd.read_csv('data/unified_node_data.csv', keep_default_na=False)
-    df_edge = pd.read_csv('data/max_edge_weights.csv')
-    df_formatted = preprocess.nodes1(df_node)
-    df_clean = preprocess.nodes_filter(df_formatted, df_edge)
-    df_impute = preprocess.impute(df_clean)
-
+    df_node = pd.read_csv('data/imputed_unified_node_data.csv', keep_default_na=False)
     X_train, X_val, X_test, y_train, y_val, y_test = preprocess.stratified_train_val_test_split(df_impute)
     '''
     from sklearn.model_selection import train_test_split
@@ -215,3 +211,135 @@ def stratified_train_val_test_split(node_df, val_size=0.2, test_size=0.1):
     stratify_on = y_valtest > 0
     X_val,   X_test,    y_val,   y_test    = train_test_split(X_valtest, y_valtest, test_size=test_size/(val_size + test_size), random_state=seed, stratify=stratify_on)
     return X_train, X_val, X_test, y_train, y_val, y_test
+
+def downsample(df, tgt, random_state=0):
+    groups = df.groupby(tgt)
+    min_size = groups.size().min()
+    return groups.sample(n=min_size, random_state=random_state)
+
+
+def get_rank_weight(df):
+    groupby_mission = df.groupby('mission')
+    df['max_rank'] = groupby_mission['rank'].transform('count')
+    df['weight_rank'] = np.exp(-(df['rank']/df['max_rank']))
+    return df
+
+def get_line_weight(df):
+    df['weight_lines'] = 1 - np.exp(-df['lines']/10)
+    return df
+
+def get_percent_weights(df):
+    df['weight_percent_max'] = df[['percent1', 'percent2']].max(axis='columns')/100
+    df['weight_percent_min'] = df[['percent1', 'percent2']].min(axis='columns')/100
+    df['weight_percent_mean'] = df[['percent1', 'percent2']].mean(axis='columns')/100
+    groupby_mission = df.groupby('mission')
+    max_mean  = groupby_mission['weight_percent_max'].mean()
+    max_std   = groupby_mission['weight_percent_max'].std()
+    min_mean  = groupby_mission['weight_percent_min'].mean()
+    min_std   = groupby_mission['weight_percent_min'].std()
+    mean_mean = groupby_mission['weight_percent_mean'].mean()
+    mean_std  = groupby_mission['weight_percent_mean'].std()
+    df['weight_percent_max_norm']  = df.apply(lambda r: (r['weight_percent_max'] - max_mean[r['mission']]) / max_std[r['mission']], axis="columns")
+    df['weight_percent_min_norm']  = df.apply(lambda r: (r['weight_percent_min'] - min_mean[r['mission']]) / min_std[r['mission']], axis="columns")
+    df['weight_percent_mean_norm'] = df.apply(lambda r: (r['weight_percent_mean'] - mean_mean[r['mission']]) / mean_std[r['mission']], axis="columns")
+    max_mission_weights  = (1 - max_mean).to_dict()
+    min_mission_weights  = (1 - min_mean).to_dict()
+    mean_mission_weights = (1 - mean_mean).to_dict()
+    df['weight_percent_max_weighted_mean']  = df.apply(lambda r: r['weight_percent_max'] * max_mission_weights[r['mission']], axis="columns")
+    df['weight_percent_min_weighted_mean']  = df.apply(lambda r: r['weight_percent_min'] * min_mission_weights[r['mission']], axis="columns")
+    df['weight_percent_mean_weighted_mean'] = df.apply(lambda r: r['weight_percent_mean'] * mean_mission_weights[r['mission']], axis="columns")
+    df['weight_percent_max_norm_weighted_mean']  = df.apply(lambda r: r['weight_percent_max_norm'] * max_mission_weights[r['mission']], axis="columns")
+    df['weight_percent_min_norm_weighted_mean']  = df.apply(lambda r: r['weight_percent_min_norm'] * min_mission_weights[r['mission']], axis="columns")
+    df['weight_percent_mean_norm_weighted_mean'] = df.apply(lambda r: r['weight_percent_mean_norm'] * mean_mission_weights[r['mission']], axis="columns")
+
+    
+    max_mission_weights  = max_std.to_dict()
+    min_mission_weights  = min_std.to_dict()
+    mean_mission_weights = mean_std.to_dict()
+    df['weight_percent_max_weighted_std']  = df.apply(lambda r: r['weight_percent_max'] * max_mission_weights[r['mission']], axis="columns")
+    df['weight_percent_min_weighted_std']  = df.apply(lambda r: r['weight_percent_min'] * min_mission_weights[r['mission']], axis="columns")
+    df['weight_percent_mean_weighted_std'] = df.apply(lambda r: r['weight_percent_mean'] * mean_mission_weights[r['mission']], axis="columns")
+    df['weight_percent_max_norm_weighted_std']  = df.apply(lambda r: r['weight_percent_max_norm'] * max_mission_weights[r['mission']], axis="columns")
+    df['weight_percent_min_norm_weighted_std']  = df.apply(lambda r: r['weight_percent_min_norm'] * min_mission_weights[r['mission']], axis="columns")
+    df['weight_percent_mean_norm_weighted_std'] = df.apply(lambda r: r['weight_percent_mean_norm'] * mean_mission_weights[r['mission']], axis="columns")
+    return df
+
+def get_percent_weights(df):
+    df['weight_percent_max'] = df[['percent1', 'percent2']].max(axis='columns')/100
+    df['weight_percent_min'] = df[['percent1', 'percent2']].min(axis='columns')/100
+    df['weight_percent_mean'] = df[['percent1', 'percent2']].mean(axis='columns')/100
+
+    groupby_mission = df.groupby('mission')
+    for agg in ['max', 'min', 'mean']:
+        df[f'{agg}_mean']  = groupby_mission[f'weight_percent_{agg}'].transform('mean')
+        df[f'{agg}_std']   = groupby_mission[f'weight_percent_{agg}'].transform('std')
+        df[f'weight_percent_{agg}_norm']  = (df[f'weight_percent_{agg}'] - df[f'{agg}_mean']) / df[f'{agg}_std']
+
+        df[f'weight_percent_{agg}_weighted_mean']       = df[f'weight_percent_{agg}'] * (1 - df[f'{agg}_mean'])
+        df[f'weight_percent_{agg}_norm_weighted_mean']  = df[f'weight_percent_{agg}_norm'] * (1 - df[f'{agg}_mean'])
+
+        df[f'weight_percent_{agg}_weighted_std']        = df[f'weight_percent_{agg}'] *df[f'{agg}_std']
+        df[f'weight_percent_{agg}_norm_weighted_std']   = df[f'weight_percent_{agg}_norm'] * df[f'{agg}_std']
+    return df
+
+def get_combined_weights(df):
+    for flavour in ['', '_norm']:
+        for agg in ['max', 'min', 'mean']:
+            base = f'weight_percent_{agg}{flavour}'
+            df[f'{base}_rank']       = df[f'{base}'] * df['weight_rank']
+            df[f'{base}_lines']      = df[f'{base}'] * df['weight_lines']
+            df[f'{base}_rank_lines'] = df[f'{base}_rank'] * df['weight_lines']
+            for weight_type in ['mean', 'std']:
+                df[f'{base}_weighted_{weight_type}_rank']       = df[f'{base}_weighted_{weight_type}'] * df['weight_rank']
+                df[f'{base}_weighted_{weight_type}_lines']      = df[f'{base}_weighted_{weight_type}'] * df['weight_lines']
+                df[f'{base}_weighted_{weight_type}_rank_lines'] = df[f'{base}_weighted_{weight_type}_rank'] * df['weight_lines']
+    return df
+
+def get_node_features_from_moss(df, moss_files):
+    '''
+    Example usage:
+    pairwise_moss = ['raw_data/1821_1935.csv', 'raw_data/1821_2023.csv', 'raw_data/1935_2023.csv']
+    df_node = pd.read_csv('data/imputed_unified_node_data.csv', keep_default_na=False)
+
+    df_new_node = preprocess.get_node_features_from_moss(df_node, pairwise_moss)
+    '''
+    from scipy.sparse.csgraph import csgraph_from_dense, shortest_path
+
+    df_moss = []
+    for fn in moss_files:
+        _df_moss = pd.read_csv(fn)
+        mask = _df_moss['name1'] != _df_moss['name2']
+        _df_moss = _df_moss[mask]
+        _df_moss['rank'] = _df_moss['url'].str.rsplit('match', 1).str[-1].str[:-5].astype(int)
+        df_moss.append(get_combined_weights(get_percent_weights(get_line_weight(get_rank_weight(_df_moss)))))
+    df_moss = pd.concat(df_moss)
+    df_moss.drop_duplicates(subset=['mission', 'name1', 'name2'], keep="first", inplace=True)
+
+    name_subset = set(df['name'])
+
+    weight_type = 'weight_percent_max_norm_weighted_std_rank_lines'
+    mask = (df_moss['name1'].isin(name_subset) & df_moss['name2'].isin(name_subset) & (df_moss[weight_type] > 0))
+    edge_list = df_moss[mask][['name1', 'name2', 'mission', weight_type]].values
+
+    missions2idx = {mission: i for i, mission in enumerate(sorted((set(df_moss['mission']))))}
+    names2idx = {name: i for i, name in enumerate(df['name'])}
+
+    shape = (len(missions2idx), len(names2idx), len(names2idx))
+
+    A = np.zeros(shape=shape, dtype=float)
+    for name1, name2, mission, weight in edge_list:
+        m = missions2idx[mission]
+        i = names2idx[name1]
+        j = names2idx[name2]
+        A[m, i, j] += np.log(weight)
+    A[A==0] = np.inf
+    A = np.exp(A)
+    
+    for i in range(len(missions2idx)):
+        G2_sparse = csgraph_from_dense(A[i], null_value=np.inf)
+        sg = shortest_path(G2_sparse, directed=False)
+        sg[sg == np.inf] = 1
+        A[i] = 1 - sg
+    new_features = pd.DataFrame(np.hstack(A), index=df['name'])
+    # new_features = new_features.merge(df[['name', 'num_confessed_assignments']], left_index=True, right_on='name')
+    return new_features.reset_index()
