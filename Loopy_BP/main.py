@@ -3,7 +3,7 @@ import pandas as pd
 import LBP
 
 graph = LBP.Graph()
-node_type, edge_type = 'gpc', 'svm'
+node_type, edge_type = 'knn', 'knn'
 nodes = pd.read_csv('%s_node_potential.csv' % node_type)
 edges = pd.read_csv('%s_edge_potential.csv' % edge_type)
 
