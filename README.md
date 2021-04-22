@@ -1,4 +1,4 @@
-# Bayesian Beats Cheats
+# CS5340: Group 10 - Bayesian Beats Cheats
 Once you go Bayesian, there is no evasion!
 
 ## Commit guidelines:
