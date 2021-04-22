@@ -2,15 +2,24 @@
 Once you go Bayesian, there is no evasion!
 
 ## Commit guidelines:
-Organised our project into the 3 method folders, app and data:
+Organised our project into the following folder structure:
 <br>
--> Iterative Classification [Jihui]
+-> Iterative_Classification [Jihui and YingYing]
 <br>
--> Loopy BP [Zihan]
+-> Loopy_BP [Zihan]
 <br>
--> GNNs [Keng Hwee]
+-> GNN [Keng Hwee]
 <br>
--> App prototype using NetworkX and streamlit [Ying Ying] (to be confirmed what exactly we want)
+-> app [For further consideration to deploy to Streamlit]
 <br>
--> Data guys [Jon, Leonard]
-
+-> data [data after node pre-processing done by Jonathan and edge pre-processing done by Leonard]
+<br>
+-> raw_data [data collected from Coursemology and MOSS outputs done by Jonathan]
+<br>
+-> src [preprocessing code provided by team]
+<br> 
+-> runs [Tensorboard logs from Keng Hwee's GNN training]
+<br>
+-> random_walk [Baseline experiment from Jonathan to find influential nodes]
+<br> 
+-> requirements.txt [Python modules for reproducibility]
